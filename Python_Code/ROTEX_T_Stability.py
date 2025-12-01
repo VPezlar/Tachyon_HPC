@@ -27,6 +27,7 @@ import PBCO
 import CLNSEBiOp  # Compressible Linearized NS BiGlobal Operator (Dense, Sparse, Diagonalized)
 import Rotex_Mapping as RoMap
 import Paraview
+import Paraview2
 import blasius_mapping as bl
 
 # -----------------------------------------------#
@@ -396,19 +397,21 @@ print("Derivatives formed, BASEFLOW loaded [" + str(ResultantTime / 60) + " min]
 #            Multidomain Discretization          #
 # -----------------------------------------------#
 
-Re = 1000000
-Mach = 6
-gamma = 1.4
-T_ref = 67.07  # [K]
-m = 14
-beta = m / YSHIFT
-N_eig = 200
-N_Out = 50
-SHIFT = 0  # For shift-and-invert eigensolver
+Re    = np.double(config["STABILITY"]["Re"])
+Mach  = np.double(config["STABILITY"]["Mach"])
+gamma = np.double(config["STABILITY"]["gamma"])
+T_ref = np.double(config["STABILITY"]["T_ref"])
+wave_num  = np.double(config["STABILITY"]["wave_num"])
+N_eig = int(config["STABILITY"]["N_eig"])
+N_Out = int(config["STABILITY"]["N_Out"])
 
-L1 = scipy.sparse.lil_matrix(CLNSEBiOp.BiOpDiagGen(RHO1, U1, V1, W1, T1, D1_y, D1_yy, D1_x, D1_xx, Re, Mach, beta, T_ref, MODE, eta1_bl, y1))
-L2 = scipy.sparse.lil_matrix(CLNSEBiOp.BiOpDiagGen(RHO2, U2, V2, W2, T2, D2_y, D2_yy, D2_x, D2_xx, Re, Mach, beta, T_ref, MODE, eta2_bl, y2))
-L3 = scipy.sparse.lil_matrix(CLNSEBiOp.BiOpDiagGen(RHO3, U3, V3, W3, T3, D3_y, D3_yy, D3_x, D3_xx, Re, Mach, beta, T_ref, MODE, eta3_bl, y3))
+SHIFT_IM = 1j * np.double(config["STABILITY"]["SHIFT_IM"])
+SHIFT_RE = np.double(config["STABILITY"]["SHIFT_RE"])
+SHIFT = SHIFT_RE + SHIFT_IM
+
+L1 = scipy.sparse.lil_matrix(CLNSEBiOp.BiOpDiagGen(RHO1, U1, V1, W1, T1, D1_y, D1_yy, D1_x, D1_xx, Re, Mach, wave_num, T_ref, MODE, eta1_bl, y1))
+L2 = scipy.sparse.lil_matrix(CLNSEBiOp.BiOpDiagGen(RHO2, U2, V2, W2, T2, D2_y, D2_yy, D2_x, D2_xx, Re, Mach, wave_num, T_ref, MODE, eta2_bl, y2))
+L3 = scipy.sparse.lil_matrix(CLNSEBiOp.BiOpDiagGen(RHO3, U3, V3, W3, T3, D3_y, D3_yy, D3_x, D3_xx, Re, Mach, wave_num, T_ref, MODE, eta3_bl, y3))
 
 
 # -----------------------------------------------#
@@ -884,8 +887,8 @@ if Ver_Interfaces_C0.size > 0:
 #                   Solving GEVP                 #
 # -----------------------------------------------#
 
-L = scipy.sparse.csc_array(L)  # Preferred sparse format for eigensolver
-M = scipy.sparse.csc_array(M)  # Preferred sparse format for eigensolver
+L = scipy.sparse.csc_matrix(L)  # Preferred sparse format for eigensolver
+M = scipy.sparse.csc_matrix(M)  # Preferred sparse format for eigensolver
 
 ResultantTime = time.time() - StartTime
 print("Operator formed, BC and IC enforced [" + str(ResultantTime / 60) + " min]")
@@ -945,103 +948,41 @@ for i in range(N_Out):
 
     # Reshaping for printing
     order = "C"
-    rho_vec1 = np.reshape(rho_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
-    rho_vec2 = np.reshape(rho_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
-    rho_vec3 = np.reshape(rho_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    rho_vec1    = np.reshape(rho_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
+    rho_vec2    = np.reshape(rho_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
+    rho_vec3    = np.reshape(rho_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    rho_vec_RE  = [rho_vec1.real, rho_vec2.real, rho_vec3.real]
+    rho_vec_IM  = [rho_vec1.imag, rho_vec2.imag, rho_vec3.imag]
 
-    u_vec1 = np.reshape(u_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
-    u_vec2 = np.reshape(u_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
-    u_vec3 = np.reshape(u_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    u_vec1   = np.reshape(u_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
+    u_vec2   = np.reshape(u_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
+    u_vec3   = np.reshape(u_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    u_vec_RE = [u_vec1.real, u_vec2.real, u_vec3.real]
+    u_vec_IM = [u_vec1.imag, u_vec2.imag, u_vec3.imag]
 
-    v_vec1 = np.reshape(v_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
-    v_vec2 = np.reshape(v_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
-    v_vec3 = np.reshape(v_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    v_vec1   = np.reshape(v_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
+    v_vec2   = np.reshape(v_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
+    v_vec3   = np.reshape(v_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    v_vec_RE = [v_vec1.real, v_vec2.real, v_vec3.real]
+    v_vec_IM = [v_vec1.imag, v_vec2.imag, v_vec3.imag]
 
-    w_vec1 = np.reshape(w_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
-    w_vec2 = np.reshape(w_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
-    w_vec3 = np.reshape(w_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    w_vec1     = np.reshape(w_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
+    w_vec2     = np.reshape(w_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
+    w_vec3     = np.reshape(w_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    w_vec_RE   = [w_vec1.real, w_vec2.real, w_vec3.real]
+    w_vec_IM   = [w_vec1.imag, w_vec2.imag, w_vec3.imag]
+    vel_vec_RE = [u_vec_RE, v_vec_RE, w_vec_RE]
+    vel_vec_IM = [u_vec_IM, v_vec_IM, w_vec_IM]
 
-    T_vec1 = np.reshape(T_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
-    T_vec2 = np.reshape(T_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
-    T_vec3 = np.reshape(T_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
-
-    p_vec1 = 1 / (1.4 * (Mach ** 2)) * rho_vec1 * T_vec1
-    p_vec2 = 1 / (1.4 * (Mach ** 2)) * rho_vec2 * T_vec2
-    p_vec3 = 1 / (1.4 * (Mach ** 2)) * rho_vec3 * T_vec3
-
-    # Density Perturbation
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_Rho1_R.csv", rho_vec1.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_Rho2_R.csv", rho_vec2.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_Rho3_R.csv", rho_vec3.real, delimiter=",")
-
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_Rho1_I.csv", rho_vec1.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_Rho2_I.csv", rho_vec2.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_Rho3_I.csv", rho_vec3.imag, delimiter=",")
-
-    # Stream-wise Velocity Perturbation
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_U1_R.csv", u_vec1.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_U2_R.csv", u_vec2.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_U3_R.csv", u_vec3.real, delimiter=",")
-
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_U1_I.csv", u_vec1.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_U2_I.csv", u_vec2.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_U3_I.csv", u_vec3.imag, delimiter=",")
-
-    # Wall-normal Velocity Perturbation
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_V1_R.csv", v_vec1.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_V2_R.csv", v_vec2.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_V3_R.csv", v_vec3.real, delimiter=",")
-
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_V1_I.csv", v_vec1.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_V2_I.csv", v_vec2.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_V3_I.csv", v_vec3.imag, delimiter=",")
-
-    # Span-wise Velocity Perturbation
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_W1_R.csv", w_vec1.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_W2_R.csv", w_vec2.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_W3_R.csv", w_vec3.real, delimiter=",")
-
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_W1_I.csv", w_vec1.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_W2_I.csv", w_vec2.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_W3_I.csv", w_vec3.imag, delimiter=",")
-
-    # Temperature Perturbation
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_T1_R.csv", T_vec1.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_T2_R.csv", T_vec2.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_T3_R.csv", T_vec3.real, delimiter=",")
-
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_T1_I.csv", T_vec1.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_T2_I.csv", T_vec2.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_T3_I.csv", T_vec3.imag, delimiter=",")
-
-    # Pressure Perturbation
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_P1_R.csv", p_vec1.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_P2_R.csv", p_vec2.real, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_P3_R.csv", p_vec3.real, delimiter=",")
-
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_P1_I.csv", p_vec1.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_P2_I.csv", p_vec2.imag, delimiter=",")
-    np.savetxt(CWD + "/../Output/CSV/Eigenvectors/" + str(i) + "_P3_I.csv", p_vec3.imag, delimiter=",")
+    T_vec1   = np.reshape(T_vec1, ((Ny_1 + 1), (Nx_1 + 1)), order=order)
+    T_vec2   = np.reshape(T_vec2, ((Ny_2 + 1), (Nx_2 + 1)), order=order)
+    T_vec3   = np.reshape(T_vec3, ((Ny_3 + 1), (Nx_3 + 1)), order=order)
+    T_vec_RE = [T_vec1.real, T_vec2.real, T_vec3.real]
+    T_vec_IM = [T_vec1.imag, T_vec2.imag, T_vec3.imag]
 
     x = [x1, x2, x3]
     y = [y1, y2, y3]
 
-    name = CWD + "/../Output/VTK/Eigenvectors/" + str(i)
+    name = CWD + "/../Output/VTK/Eigenvectors/" + str(i) + ".vtk"
 
-    Paraview.Export_VTK([rho_vec1.real, rho_vec2.real, rho_vec3.real], x, y, Dimensions, name + "_Rho_R")
-    Paraview.Export_VTK([rho_vec1.imag, rho_vec2.imag, rho_vec3.imag], x, y, Dimensions, name + "_Rho_I")
-
-    Paraview.Export_VTK([u_vec1.real, u_vec2.real, u_vec3.real], x, y, Dimensions, name + "_U_R")
-    Paraview.Export_VTK([u_vec1.imag, u_vec2.imag, u_vec3.imag], x, y, Dimensions, name + "_U_I")
-
-    Paraview.Export_VTK([v_vec1.real, v_vec2.real, v_vec3.real], x, y, Dimensions, name + "_V_R")
-    Paraview.Export_VTK([v_vec1.imag, v_vec2.imag, v_vec3.imag], x, y, Dimensions, name + "_V_I")
-
-    Paraview.Export_VTK([w_vec1.real, w_vec2.real, w_vec3.real], x, y, Dimensions, name + "_W_R")
-    Paraview.Export_VTK([w_vec1.imag, w_vec2.imag, w_vec3.imag], x, y, Dimensions, name + "_W_I")
-
-    Paraview.Export_VTK([T_vec1.real, T_vec2.real, T_vec3.real], x, y, Dimensions, name + "_T_R")
-    Paraview.Export_VTK([T_vec1.imag, T_vec2.imag, T_vec3.imag], x, y, Dimensions, name + "_T_I")
-
-    Paraview.Export_VTK([p_vec1.real, p_vec2.real, p_vec3.real], x, y, Dimensions, name + "_P_R")
-    Paraview.Export_VTK([p_vec1.imag, p_vec2.imag, p_vec3.imag], x, y, Dimensions, name + "_P_I")
+    Paraview2.Export_VTK(name, rho_vec_RE, vel_vec_RE, T_vec_RE, rho_vec_IM, vel_vec_IM, T_vec_IM, [x, y], Dim)
