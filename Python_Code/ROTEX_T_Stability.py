@@ -80,7 +80,7 @@ grids_eta = [eta1, eta2, eta3]
 # -----------------------------------------------#
 
 XSHIFT = 1
-YSHIFT = 0.12482
+YSHIFT = 0.124939
 
 
 # Dimensions
@@ -88,20 +88,19 @@ Theta_c = 7  # [Deg]
 Theta_f = 20
 
 # BL percentage
-xi1_half = 0.55
-xi2_half = 0.45
-xi3_half = 0.35
-
-eta1_half = 0.38
-eta2_half = 0.38
-eta3_half = 0.38
+xi1_half  = np.double(config['SETTINGS']['xi1_half'])
+xi2_half  = np.double(config['SETTINGS']['xi2_half'])
+xi3_half  = np.double(config['SETTINGS']['xi3_half'])
+eta1_half = np.double(config['SETTINGS']['eta1_half'])
+eta2_half = np.double(config['SETTINGS']['eta2_half'])
+eta3_half = np.double(config['SETTINGS']['eta3_half'])
 
 # Domain bounds
 x1_min = -0.165 + XSHIFT
 x1_max = 0 + XSHIFT
 
 x2_min = 0 + XSHIFT
-x2_max = 52.4/406.6 + XSHIFT
+x2_max = 1.12642
 
 x3_min = x2_max
 x3_max = 0.16 + XSHIFT
@@ -285,65 +284,67 @@ del dxidx2, dxidy2, detadx2, detady2, dxdxi2, dxdeta2, dydxi2, dydeta2
 # Plotting structured meshes ##########################################
 # Opening input text file
 MESH_NAME = config["SETTINGS"]["MESH_NAME"]
-fmesh1 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '1.vtk', 'w')
-fmesh1.write("# vtk DataFile Version 3.0")
-fmesh1.write("\nvtk output mesh")
-fmesh1.write("\nASCII")
-fmesh1.write("\nDATASET STRUCTURED_GRID")
-fmesh1.write("\nDIMENSIONS" + " " + str(Nx_1 + 1) + " " + str(Ny_1 + 1) + " " + "1")
-fmesh1.write("\nPOINTS" + " " + str((Nx_1 + 1) * (Ny_1 + 1)) + " " + "float")
+Paraview2.Export_Mesh("../Output/VTK/MESH/" + MESH_NAME + ".vtk", [grids_x, grids_y], Dimensions + 1)
 
-for j in range(Ny_1 + 1):
-    for i in range(Nx_1 + 1):
-        fmesh1.write("\n" + str(x1[j,i]) + " " + str(y1[j,i]) + " " + "0")
-
-fmesh1.write("\nPOINT_DATA " + str((Ny_1 + 1) * (Nx_1 + 1)))
-fmesh1.write("\nSCALARS Multi double")
-fmesh1.write("\nLOOKUP_TABLE default")
-for i in range((Ny_1 + 1) * (Nx_1 + 1)):
-    fmesh1.write("\n" + str(1))
-
-fmesh1.close()
-
-fmesh2 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '2.vtk', 'w')
-fmesh2.write("# vtk DataFile Version 3.0")
-fmesh2.write("\nvtk output mesh")
-fmesh2.write("\nASCII")
-fmesh2.write("\nDATASET STRUCTURED_GRID")
-fmesh2.write("\nDIMENSIONS" + " " + str(Nx_2 + 1) + " " + str(Ny_2 + 1) + " " + "1")
-fmesh2.write("\nPOINTS" + " " + str((Nx_2 + 1) * (Ny_2 + 1)) + " " + "float")
-
-for j in range(Ny_2 + 1):
-    for i in range(Nx_2 + 1):
-        fmesh2.write("\n" + str(x2[j, i]) + " " + str(y2[j, i]) + " " + "0")
-
-fmesh2.write("\nPOINT_DATA " + str((Ny_2 + 1) * (Nx_2 + 1)))
-fmesh2.write("\nSCALARS Multi double")
-fmesh2.write("\nLOOKUP_TABLE default")
-for i in range((Ny_2 + 1) * (Nx_2 + 1)):
-    fmesh2.write("\n" + str(1))
-
-fmesh2.close()
-
-fmesh3 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '3.vtk', 'w')
-fmesh3.write("# vtk DataFile Version 3.0")
-fmesh3.write("\nvtk output mesh")
-fmesh3.write("\nASCII")
-fmesh3.write("\nDATASET STRUCTURED_GRID")
-fmesh3.write("\nDIMENSIONS" + " " + str(Nx_3 + 1) + " " + str(Ny_3 + 1) + " " + "1")
-fmesh3.write("\nPOINTS" + " " + str((Nx_3 + 1) * (Ny_3 + 1)) + " " + "float")
-
-for j in range(Ny_3 + 1):
-    for i in range(Nx_3 + 1):
-        fmesh3.write("\n" + str(x3[j, i]) + " " + str(y3[j, i]) + " " + "0")
-
-fmesh3.write("\nPOINT_DATA " + str((Ny_3 + 1) * (Nx_3 + 1)))
-fmesh3.write("\nSCALARS Multi double")
-fmesh3.write("\nLOOKUP_TABLE default")
-for i in range((Ny_3 + 1) * (Nx_3 + 1)):
-    fmesh3.write("\n" + str(1))
-
-fmesh3.close()
+# fmesh1 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '1.vtk', 'w')
+# fmesh1.write("# vtk DataFile Version 3.0")
+# fmesh1.write("\nvtk output mesh")
+# fmesh1.write("\nASCII")
+# fmesh1.write("\nDATASET STRUCTURED_GRID")
+# fmesh1.write("\nDIMENSIONS" + " " + str(Nx_1 + 1) + " " + str(Ny_1 + 1) + " " + "1")
+# fmesh1.write("\nPOINTS" + " " + str((Nx_1 + 1) * (Ny_1 + 1)) + " " + "float")
+#
+# for j in range(Ny_1 + 1):
+#     for i in range(Nx_1 + 1):
+#         fmesh1.write("\n" + str(x1[j,i]) + " " + str(y1[j,i]) + " " + "0")
+#
+# fmesh1.write("\nPOINT_DATA " + str((Ny_1 + 1) * (Nx_1 + 1)))
+# fmesh1.write("\nSCALARS Multi double")
+# fmesh1.write("\nLOOKUP_TABLE default")
+# for i in range((Ny_1 + 1) * (Nx_1 + 1)):
+#     fmesh1.write("\n" + str(1))
+#
+# fmesh1.close()
+#
+# fmesh2 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '2.vtk', 'w')
+# fmesh2.write("# vtk DataFile Version 3.0")
+# fmesh2.write("\nvtk output mesh")
+# fmesh2.write("\nASCII")
+# fmesh2.write("\nDATASET STRUCTURED_GRID")
+# fmesh2.write("\nDIMENSIONS" + " " + str(Nx_2 + 1) + " " + str(Ny_2 + 1) + " " + "1")
+# fmesh2.write("\nPOINTS" + " " + str((Nx_2 + 1) * (Ny_2 + 1)) + " " + "float")
+#
+# for j in range(Ny_2 + 1):
+#     for i in range(Nx_2 + 1):
+#         fmesh2.write("\n" + str(x2[j, i]) + " " + str(y2[j, i]) + " " + "0")
+#
+# fmesh2.write("\nPOINT_DATA " + str((Ny_2 + 1) * (Nx_2 + 1)))
+# fmesh2.write("\nSCALARS Multi double")
+# fmesh2.write("\nLOOKUP_TABLE default")
+# for i in range((Ny_2 + 1) * (Nx_2 + 1)):
+#     fmesh2.write("\n" + str(1))
+#
+# fmesh2.close()
+#
+# fmesh3 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '3.vtk', 'w')
+# fmesh3.write("# vtk DataFile Version 3.0")
+# fmesh3.write("\nvtk output mesh")
+# fmesh3.write("\nASCII")
+# fmesh3.write("\nDATASET STRUCTURED_GRID")
+# fmesh3.write("\nDIMENSIONS" + " " + str(Nx_3 + 1) + " " + str(Ny_3 + 1) + " " + "1")
+# fmesh3.write("\nPOINTS" + " " + str((Nx_3 + 1) * (Ny_3 + 1)) + " " + "float")
+#
+# for j in range(Ny_3 + 1):
+#     for i in range(Nx_3 + 1):
+#         fmesh3.write("\n" + str(x3[j, i]) + " " + str(y3[j, i]) + " " + "0")
+#
+# fmesh3.write("\nPOINT_DATA " + str((Ny_3 + 1) * (Nx_3 + 1)))
+# fmesh3.write("\nSCALARS Multi double")
+# fmesh3.write("\nLOOKUP_TABLE default")
+# for i in range((Ny_3 + 1) * (Nx_3 + 1)):
+#     fmesh3.write("\n" + str(1))
+#
+# fmesh3.close()
 
 # -----------------------------------------------#
 #                   Baseflow                     #

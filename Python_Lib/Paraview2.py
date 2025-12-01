@@ -165,3 +165,75 @@ def Export_VTK(filename, Rho_real, Vel_real, T_real, Rho_imag, Vel_imag, T_imag,
 
         # 3. Velocity
         write_vector_set("Velocity", Vel_real, Vel_imag)
+
+
+def Export_Mesh(filename, Coords_list, Dim_arr):
+    """
+    Export ONLY the mesh geometry with a dummy scalar variable.
+    Useful for checking connectivity and grid shape without loading full flow data.
+    """
+    num_regions = len(Dim_arr)
+
+    total_points = 0
+    total_cells = 0
+    point_offsets = [0]
+
+    # 1. Calculate Totals
+    for i in range(num_regions):
+        ny = int(Dim_arr[i, 0])
+        nx = int(Dim_arr[i, 1])
+
+        n_pts = nx * ny
+        n_cells = (nx - 1) * (ny - 1)
+
+        total_points += n_pts
+        total_cells += n_cells
+        point_offsets.append(total_points)
+
+    with open(filename, 'w') as f:
+        # 2. Header
+        f.write("# vtk DataFile Version 3.0\n")
+        f.write("Mesh Geometry Check\n")
+        f.write("ASCII\n")
+        f.write("DATASET UNSTRUCTURED_GRID\n")
+
+        # 3. Points
+        f.write(f"POINTS {total_points} double\n")
+        for i in range(num_regions):
+            X = Coords_list[0][i].flatten()
+            Y = Coords_list[1][i].flatten()
+
+            # Sanity Check
+            ny, nx = int(Dim_arr[i, 0]), int(Dim_arr[i, 1])
+            expected_n = nx * ny
+            if X.size != expected_n:
+                raise ValueError(f"Region {i} mismatch: Arrays are {X.size}, Dim says {expected_n} ({ny}x{nx})")
+
+            for x, y in zip(X, Y):
+                f.write(f"{x:.6f} {y:.6f} 0.0\n")
+
+        # 4. Cells
+        f.write(f"\nCELLS {total_cells} {total_cells * 5}\n")
+        for r in range(num_regions):
+            ny, nx = int(Dim_arr[r, 0]), int(Dim_arr[r, 1])
+            start_idx = point_offsets[r]
+
+            for y in range(ny - 1):
+                for x in range(nx - 1):
+                    p0 = start_idx + (y * nx + x)
+                    p1 = p0 + 1
+                    p2 = p0 + nx + 1
+                    p3 = p0 + nx
+                    f.write(f"4 {p0} {p1} {p2} {p3}\n")
+
+        # 5. Cell Types
+        f.write(f"\nCELL_TYPES {total_cells}\n")
+        for _ in range(total_cells):
+            f.write("9\n")
+
+            # 6. Dummy Data (Required so ParaView has something to color by)
+        f.write(f"\nPOINT_DATA {total_points}\n")
+        f.write("SCALARS MeshCheck double 1\n")
+        f.write("LOOKUP_TABLE default\n")
+        for _ in range(total_points):
+            f.write("0.0\n")

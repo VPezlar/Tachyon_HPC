@@ -238,45 +238,7 @@ del dxidx2, dxidy2, detadx2, detady2, dxdxi2, dxdeta2, dydxi2, dydeta2
 # Opening input text file
 
 MESH_NAME = config["SETTINGS"]["MESH_NAME"]
-fmesh1 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '1.vtk', 'w')
-fmesh1.write("# vtk DataFile Version 3.0")
-fmesh1.write("\nvtk output mesh")
-fmesh1.write("\nASCII")
-fmesh1.write("\nDATASET STRUCTURED_GRID")
-fmesh1.write("\nDIMENSIONS" + " " + str(Nx_1 + 1) + " " + str(Ny_1 + 1) + " " + "1")
-fmesh1.write("\nPOINTS" + " " + str((Nx_1 + 1) * (Ny_1 + 1)) + " " + "float")
-
-for j in range(Ny_1 + 1):
-    for i in range(Nx_1 + 1):
-        fmesh1.write("\n" + str(x1[j,i]) + " " + str(y1[j,i]) + " " + "0")
-
-fmesh1.write("\nPOINT_DATA " + str((Ny_1 + 1) * (Nx_1 + 1)))
-fmesh1.write("\nSCALARS Multi double")
-fmesh1.write("\nLOOKUP_TABLE default")
-for i in range((Ny_1 + 1) * (Nx_1 + 1)):
-    fmesh1.write("\n" + str(1))
-
-fmesh1.close()
-
-fmesh2 = open(CWD + '/../Output/VTK/MESH/' + MESH_NAME + '2.vtk', 'w')
-fmesh2.write("# vtk DataFile Version 3.0")
-fmesh2.write("\nvtk output mesh")
-fmesh2.write("\nASCII")
-fmesh2.write("\nDATASET STRUCTURED_GRID")
-fmesh2.write("\nDIMENSIONS" + " " + str(Nx_2 + 1) + " " + str(Ny_2 + 1) + " " + "1")
-fmesh2.write("\nPOINTS" + " " + str((Nx_2 + 1) * (Ny_2 + 1)) + " " + "float")
-
-for j in range(Ny_2 + 1):
-    for i in range(Nx_2 + 1):
-        fmesh2.write("\n" + str(x2[j, i]) + " " + str(y2[j, i]) + " " + "0")
-
-fmesh2.write("\nPOINT_DATA " + str((Ny_2 + 1) * (Nx_2 + 1)))
-fmesh2.write("\nSCALARS Multi double")
-fmesh2.write("\nLOOKUP_TABLE default")
-for i in range((Ny_2 + 1) * (Nx_2 + 1)):
-    fmesh2.write("\n" + str(1))
-
-fmesh2.close()
+Paraview2.Export_Mesh("../Output/VTK/MESH/" + MESH_NAME + ".vtk", [grids_x, grids_y], Dimensions + 1)
 
 # -----------------------------------------------#
 #                   Baseflow                     #
