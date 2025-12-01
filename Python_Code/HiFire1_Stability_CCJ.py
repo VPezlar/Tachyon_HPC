@@ -10,6 +10,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(CWD), 'Python_Lib'))
 # 3rd Party libraries
 import numpy as np  # General array manipulation
 import scipy  # Sparse format and sparse eigensolver
+import scipy.sparse
+import scipy.sparse.linalg
 import time  # RunTime monitoring
 import copy  # Occasional dealing with numpy pointer implementation
 import pandas as pd  # Baseflow read and manipulation
