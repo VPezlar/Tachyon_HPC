@@ -343,7 +343,7 @@ for d_Wave in range(N_wave_Iter):
 
     ResultantTime = time.time() - StartTime
 
-    print("Iteration: " + str(d_Wave + 1) + " of " + str(N_wave_Iter))
+    print("\n" + "Iteration: " + str(d_Wave + 1) + " of " + str(N_wave_Iter))
     print("Derivatives formed, BASEFLOW loaded [" + str(ResultantTime / 60) + " min]")
 
     # -----------------------------------------------#
