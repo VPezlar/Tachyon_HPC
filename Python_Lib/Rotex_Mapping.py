@@ -1,8 +1,6 @@
 import numpy as np
-from fontTools.unicodedata import block
-
 import spectral as sp
-from matplotlib import pyplot as plt
+
 
 
 def RotexMap(xi, eta, Dxi, Deta, Theta, Theta_top, xmin, xmax, ymin, ymax, Ceil, shift):
