@@ -65,7 +65,6 @@ delta_wave_Iter = int(config['STABILITY']['delta_wave'])
 
 for d_Wave in range(N_wave_Iter):
 
-    print("Iteration: " + str(d_Wave + 1) + " of " + str(N_wave_Iter))
     # -----------------------------------------------#
     #             Un-Mapped FDq Matrices             #
     # -----------------------------------------------#
@@ -348,6 +347,7 @@ for d_Wave in range(N_wave_Iter):
     # -----------------------------------------------#
     #            Multidomain Discretization          #
     # -----------------------------------------------#
+    print("Iteration: " + str(d_Wave + 1) + " of " + str(N_wave_Iter))
 
     Re    = np.double(config["STABILITY"]["Re"])
     Mach  = np.double(config["STABILITY"]["Mach"])
