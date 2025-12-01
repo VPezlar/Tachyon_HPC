@@ -342,12 +342,13 @@ for d_Wave in range(N_wave_Iter):
         sys.exit()
 
     ResultantTime = time.time() - StartTime
+
+    print("Iteration: " + str(d_Wave + 1) + " of " + str(N_wave_Iter))
     print("Derivatives formed, BASEFLOW loaded [" + str(ResultantTime / 60) + " min]")
 
     # -----------------------------------------------#
     #            Multidomain Discretization          #
     # -----------------------------------------------#
-    print("Iteration: " + str(d_Wave + 1) + " of " + str(N_wave_Iter))
 
     Re    = np.double(config["STABILITY"]["Re"])
     Mach  = np.double(config["STABILITY"]["Mach"])
