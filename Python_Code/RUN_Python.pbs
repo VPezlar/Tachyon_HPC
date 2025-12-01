@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -N RUN_Python
+#PBS -q zeus_new_q
+#PBS -M vojtech-p@campus.technion.ac.il
+#PBS -mbea
+#PBS -l select=1:ncpus=40:mpiprocs=1
+#PBS -l place=scatter
+
+# working directory
+cd $PBS_O_WORKDIR
+
+echo running on nodes
+cat $PBS_NODEFILE | uniq
+cat $PBS_NODEFILE | uniq >> machines
+
+# Set number of threads (adjust this value as needed)
+export OMP_NUM_THREADS=40
+export OPENBLAS_NUM_THREADS=40
+
+# Activate virtualenv
+source /home/vojtech-p/scipy-parallel/bin/activate
+
+start_time=$(date +%s)
+
+# RUN COMMAND HERE:
+python3 -u HiFire1_Stability_CCJ.py > Tachyon_log 2>&1
+
+end_time=$(date +%s)
+run_time=$((end_time - start_time))
+echo "Run time: $run_time seconds"
+echo done
