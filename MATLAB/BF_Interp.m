@@ -106,59 +106,59 @@ writematrix(abs(T3), PATH + "/BASEFLOW/T3.csv")
 % writematrix(abs(T4), PATH + "/T4.csv")
 % writematrix(abs(T5), PATH + "BASEFLOW/T5.csv")
 
-Rlevels = linspace(min(RHO_ND), max(RHO_ND), 100);
-Ulevels = linspace(min(U_ND), max(U_ND), 100);
-Vlevels = linspace(min(V_ND), max(V_ND), 100);
-Tlevels = linspace(min(T_ND), max(T_ND), 200);
-
-figure(1)
-contourf(Z1, Y1, T1, Tlevels, 'LineColor','none')
-hold on
-contourf(Z2, Y2, T2, Tlevels,'LineColor','none')
-contourf(Z3, Y3, T3, Tlevels, 'LineColor','none')
-% contourf(Z4, Y4, T4, Tlevels, 'LineColor','none')
-% contourf(Z5, Y5, T5, Tlevels, 'LineColor','none')
-title("Temperature")
-hold off
-
-figure(2)
-contourf(Z1, Y1, U1, Ulevels, 'LineColor','none')
-hold on
-contourf(Z2, Y2, U2, Ulevels, 'LineColor','none')
-contourf(Z3, Y3, U3, Ulevels, 'LineColor','none')
-% contourf(Z4, Y4, U4, Ulevels, 'LineColor','none')
-% contourf(Z5, Y5, U5, Ulevels, 'LineColor','none')
-title("U Vel")
-hold off
-
-figure(3)
-contourf(Z1, Y1, V1, Vlevels, 'LineColor','none')
-hold on
-contourf(Z2, Y2, V2, Vlevels,  'LineColor','none')
-contourf(Z3, Y3, V3, Vlevels,  'LineColor','none')
-% contourf(Z4, Y4, V4, Vlevels,  'LineColor','none')
-% contourf(Z5, Y5, V5, Vlevels,  'LineColor','none')
-title("V Vel")
-hold off
-
-figure(4)
-contourf(Z1, Y1, RHO1, Rlevels,  'LineColor','none')
-hold on
-contourf(Z2, Y2, RHO2, Rlevels, 'LineColor','none')
-contourf(Z3, Y3, RHO3, Rlevels, 'LineColor','none')
-% contourf(Z4, Y4, RHO4, Rlevels, 'LineColor','none')
-% contourf(Z5, Y5, RHO5, Rlevels, 'LineColor','none')
-title("Density")
-hold off
-
-set(gca,'DataAspectRatio',[1 1 1])
-
-% surf(Z1, Y1, ones(length(Y1(:,1)), length(Z1(1,:))))
+% Rlevels = linspace(min(RHO_ND), max(RHO_ND), 100);
+% Ulevels = linspace(min(U_ND), max(U_ND), 100);
+% Vlevels = linspace(min(V_ND), max(V_ND), 100);
+% Tlevels = linspace(min(T_ND), max(T_ND), 200);
+% 
+% figure(1)
+% contourf(Z1, Y1, T1, Tlevels, 'LineColor','none')
 % hold on
-% surf(Z2, Y2, ones(length(Y2(:,1)), length(Z2(1,:))))
-% surf(Z3, Y3, ones(length(Y3(:,1)), length(Z3(1,:))))
-% surf(Z4, Y4, ones(length(Y4(:,1)), length(Z4(1,:))))
-% surf(Z5, Y5, ones(length(Y5(:,1)), length(Z5(1,:))))
+% contourf(Z2, Y2, T2, Tlevels,'LineColor','none')
+% contourf(Z3, Y3, T3, Tlevels, 'LineColor','none')
+% % contourf(Z4, Y4, T4, Tlevels, 'LineColor','none')
+% % contourf(Z5, Y5, T5, Tlevels, 'LineColor','none')
+% title("Temperature")
 % hold off
+% 
+% figure(2)
+% contourf(Z1, Y1, U1, Ulevels, 'LineColor','none')
+% hold on
+% contourf(Z2, Y2, U2, Ulevels, 'LineColor','none')
+% contourf(Z3, Y3, U3, Ulevels, 'LineColor','none')
+% % contourf(Z4, Y4, U4, Ulevels, 'LineColor','none')
+% % contourf(Z5, Y5, U5, Ulevels, 'LineColor','none')
+% title("U Vel")
+% hold off
+% 
+% figure(3)
+% contourf(Z1, Y1, V1, Vlevels, 'LineColor','none')
+% hold on
+% contourf(Z2, Y2, V2, Vlevels,  'LineColor','none')
+% contourf(Z3, Y3, V3, Vlevels,  'LineColor','none')
+% % contourf(Z4, Y4, V4, Vlevels,  'LineColor','none')
+% % contourf(Z5, Y5, V5, Vlevels,  'LineColor','none')
+% title("V Vel")
+% hold off
+% 
+% figure(4)
+% contourf(Z1, Y1, RHO1, Rlevels,  'LineColor','none')
+% hold on
+% contourf(Z2, Y2, RHO2, Rlevels, 'LineColor','none')
+% contourf(Z3, Y3, RHO3, Rlevels, 'LineColor','none')
+% % contourf(Z4, Y4, RHO4, Rlevels, 'LineColor','none')
+% % contourf(Z5, Y5, RHO5, Rlevels, 'LineColor','none')
+% title("Density")
+% hold off
+% 
+% set(gca,'DataAspectRatio',[1 1 1])
+% 
+% % surf(Z1, Y1, ones(length(Y1(:,1)), length(Z1(1,:))))
+% % hold on
+% % surf(Z2, Y2, ones(length(Y2(:,1)), length(Z2(1,:))))
+% % surf(Z3, Y3, ones(length(Y3(:,1)), length(Z3(1,:))))
+% % surf(Z4, Y4, ones(length(Y4(:,1)), length(Z4(1,:))))
+% % surf(Z5, Y5, ones(length(Y5(:,1)), length(Z5(1,:))))
+% % hold off
 
 
