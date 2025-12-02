@@ -3,7 +3,7 @@ clear
 clc
 
 % Original Grid 
-BASEFLOW =readmatrix("../Input/BASEFLOW/BASEFLOW_ND.csv");
+BASEFLOW =readmatrix("../Input/BASEFLOW/BASEFLOW_ND_Re1000k.csv");
 PATH     = "../Input"; 
 
 x = BASEFLOW(:, 5); 

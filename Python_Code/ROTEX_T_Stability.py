@@ -15,7 +15,7 @@ import scipy.sparse.linalg
 import time  # RunTime monitoring
 import copy  # Occasional dealing with numpy pointer implementation
 import pandas as pd  # Baseflow read and manipulation
-from pathlib import Path  # <--- Added this library
+from pathlib import Path  # Path handling
 
 # Config Settings
 import configparser # module to load config file
@@ -877,9 +877,6 @@ for d_Wave in range(N_wave_Iter):
             imag_part = f"{eig_val[i, 0].imag: .15f}"
 
             EIGEN.write(f"{real_part};{imag_part}\n")
-
-    # No need for EIGEN.close() when using 'with open(...)', it handles it automatically.
-
 
 
     # -----------------------------------------------#
